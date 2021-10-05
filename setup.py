@@ -13,8 +13,12 @@ with open(os.path.join('.', 'VERSION')) as version_file:
 with open("README.md", 'r') as f:
     long_description = f.read()
 
-with open("requirements.txt") as requirements:
-    requires = list(requirements)
+with open('requirements.txt', 'r') as f:
+    requires = [
+        s for s in [
+            line.split('#', 1)[0].strip(' \t\n') for line in f
+        ] if s != ''
+    ]
 
 setup_options = {
     'name': 'icon-myid-sdk',
