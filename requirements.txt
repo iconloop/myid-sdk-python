@@ -1,0 +1,2 @@
+iconsdk
+icon-did-sdk @ git+ssh://git@github.com/iconloop/did-sdk-python.git@develop
