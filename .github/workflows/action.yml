@@ -11,6 +11,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
+      - name: Change private repo url
+        run: |
+          sed -i -e "s/git@/${{ secrets.ICONLOOP_PRIVATE_REPO_ACCESS_TOKEN }}@/" -e "s/git+ssh:/git+https:/" requirements.txt
       - name: Install dependencies for ecdsa
         run: |
           sudo apt-get update
