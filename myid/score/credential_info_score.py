@@ -48,7 +48,7 @@ class CredentialInfoScore:
         call: Call = self._build_call(method='getUndertakerList')
         return self._icon_service.call(call)
 
-    def is_valid(self, signature: str) -> dict:
+    def is_valid(self, signature: str) -> str:
         params = {'sig': signature}
         call: Call = self._build_call(method='isValid', params=params)
         return self._icon_service.call(call)

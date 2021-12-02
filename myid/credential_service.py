@@ -9,6 +9,7 @@ from iconsdk.exception import JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet, Wallet
+from yirgachefe import logger
 
 from myid.score.credential_info_score import CredentialInfoScore
 
@@ -38,16 +39,22 @@ class CredentialService:
         :return:
         """
         response = None
-        tx_result = None
-        while response is None:
-            await asyncio.sleep(1)
+        retry_times = 5
+        while response is None and retry_times > 0:
             try:
                 tx_result = self._icon_service.get_transaction_result(tx_hash)
+                if not tx_result:
+                    raise JSONRPCException('transaction result is None.')
             except JSONRPCException as e:
-                if 'Pending transaction' not in e.message['message']:
+                logger.debug(f'{e}')
+
+                if retry_times == 0:
                     raise TransactionException(e)
 
-            if not tx_result:
+                retry_times -= 1
+                logger.debug(f'Remain to retry request for getting transaction result: {retry_times}')
+
+                await asyncio.sleep(2)
                 continue
 
             return tx_result
@@ -129,10 +136,15 @@ class CredentialService:
         return json.loads(self._credential_score.get(signature))
 
     def is_valid(self, signature: str) -> dict:
+        """check validation of the Credential info that matches the issuer DID and credential signature.
+
+        :param signature: the string that credential signature
+        :return: status json
+        """
         if not signature:
             raise ValueError('signature cannot be None.')
 
-        return self._credential_score.is_valid(signature)
+        return json.loads(self._credential_score.is_valid(signature))
 
     async def register(self, wallet: KeyWallet, signed_jwt: str) -> dict:
         """register the Credential info.

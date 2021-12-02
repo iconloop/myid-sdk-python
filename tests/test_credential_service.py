@@ -21,13 +21,13 @@ class TestCredentialService:
     @pytest.fixture
     def credential_service(self) -> CredentialService:
         return CredentialService(icon_service=IconServiceFactory.create_testnet(),
-                                 network_id=3,
-                                 score_address='cxd34e7a6e840f2a79acfd8373ae0cc8931e419723')
+                                 network_id=2,
+                                 score_address='cxeb26d9ecbfcf5fea0c2dcaf2f843d5ae93cbe84d')
 
     @pytest.fixture
     def did_key_holder(self) -> DidKeyHolder:
         test_path = os.path.abspath(os.path.join(os.path.dirname(__file__)))
-        return DidKeyStore.load_did_key_holer(f'{test_path}/key_file_for_test.json', 'P@ssw0rd')
+        return DidKeyStore.load_did_key_holer(f'{test_path}/test_did_key.json', 'P@ssw0rd')
 
     @pytest.fixture
     def holder_did(self, did_key_holder) -> str:
@@ -42,7 +42,7 @@ class TestCredentialService:
                                        did_key_holder: DidKeyHolder,
                                        wallet: KeyWallet):
         # GIVEN data to register a VC
-        issue_date: int = int(time.time() * 1_000_000)
+        issue_date: int = int(time.time())
         expiry_date: int = issue_date + (60 * 60 * 24)
         header: Header = Header(alg=did_key_holder.type.name, kid=did_key_holder.kid)
         contents: dict = {
@@ -77,7 +77,7 @@ class TestCredentialService:
             type_=PropertyName.CREDENTIAL_INFO_TYPE_REVOKE,
             issuer_did=did_key_holder.did,
             signature=signature,
-            revoke_date=int(time.time() * 1_000_000))
+            revoke_date=int(time.time()))
         revoke_jwt: Jwt = RevokeCredentialInfoScoreParameter.revoke_credential_info_param(did_key_holder,
                                                                                           revoke_credential_info)
         # WHEN try to revoke a VC
