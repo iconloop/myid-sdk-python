@@ -86,3 +86,17 @@ class CredentialInfo:
     @property
     def expiry_date(self) -> int:
         return self._expiry_date
+
+    def to_json(self) -> dict:
+        return {
+            'type': self._type,
+            'issuerDid': self._issuer_did,
+            'holderDid': self._holder_did,
+            'sig': self._signature,
+            'isRevoke': self._is_revoke,
+            'issueDate': self._issue_date,
+            'revokeDate': self._revoke_date,
+            'expiryDate': self._expiry_date,
+            'created': self._creation_block,
+            'revoked': self._revocation_block
+        }
