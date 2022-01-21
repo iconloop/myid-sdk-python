@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 @dataclass
 class VCRequest:
-    jwt: str
-    nid: str
-    status: int
+    jwt: str = None
+    nid: str = None
+    status: int = None
     sig: str = None
 
     def __str__(self) -> str:
