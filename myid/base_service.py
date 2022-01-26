@@ -5,6 +5,7 @@ from didsdk.document.document import Document
 from didsdk.jwe.ecdhkey import ECDHKey
 from didsdk.jwt.jwt import Jwt, VerifyResult
 from didsdk.protocol.protocol_message import SignResult
+from yirgachefe import logger
 
 from myid.core.api_path import APIPath
 from myid.utils import HttpUtil
@@ -48,7 +49,9 @@ class BaseService:
 
     def get_did(self, did: str) -> Optional[Document]:
         request_url: str = self._url + APIPath.R_DID + did
+        logger.debug(f'get_did: {request_url}')
         result_response: ResultResponse = HttpUtil.get(request_url)
+        logger.debug(f'response: {result_response}')
 
         return Document.deserialize(result_response.result) if result_response.status else None
 
