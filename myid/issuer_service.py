@@ -70,18 +70,18 @@ class IssuerService(BaseService):
         :return:
         """
         request_url: str = self._url + APIPath.REG_VC
+        payload: Payload = credential.jwt.payload
         credential_info: CredentialInfo = CredentialInfo(type_=PropertyName.CREDENTIAL_INFO_TYPE_REGIST,
                                                          issuer_did=credential.did,
                                                          holder_did=credential.target_did,
                                                          signature=credential.jwt.signature,
-                                                         issue_date=int(time.time()))
+                                                         issue_date=int(time.time()),
+                                                         expiry_date=payload.exp)
         vc_request: VCRequest = self.get_request(credential_info=credential_info, key_holder=issuer_key_holder)
         result_response: ResultResponse = HttpUtil.post(url=request_url, json=dataclasses.asdict(vc_request))
         if result_response.status:
             types: List[str] = credential.vc.type
-            del types[DIDPropertyName.JL_TYPE_VERIFIABLE_CREDENTIAL]
-
-            payload: Payload = credential.jwt.payload
+            types.remove(DIDPropertyName.JL_TYPE_VERIFIABLE_CREDENTIAL)
             issued_register_request: IssuedRegRequest = IssuedRegRequest(vcSig=credential.jwt.signature,
                                                                          vcType=[types[0]] if len(types) > 0 else None,
                                                                          issuerDid=payload.iss,
