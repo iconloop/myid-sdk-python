@@ -15,7 +15,6 @@ class CredentialInfo:
                  creation_block: int = None,
                  revocation_block: int = None):
         """create credential info object
-
         :param type_: a string CredentialInfo type
         :param issuer_did: a string issuer DID
         :param holder_did: a string holder DID
