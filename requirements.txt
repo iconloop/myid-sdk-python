@@ -1,3 +1,4 @@
 iconsdk
 icon-did-sdk @ git+https://git@github.com/iconloop/did-sdk-python.git@develop
-yirgachefe @ git+https://git@github.com/iconloop/Yirgachefe.git@develop
+requests
+yirgachefe
