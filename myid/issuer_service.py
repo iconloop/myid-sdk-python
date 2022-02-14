@@ -11,7 +11,9 @@ from didsdk.jwt.jwt import Jwt
 from didsdk.protocol.claim_request import ClaimRequest
 from didsdk.protocol.protocol_message import ProtocolMessage, SignResult
 from didsdk.protocol.protocol_type import ProtocolType
+from iconsdk.exception import JSONRPCException
 from jwcrypto.jwe import JWE
+from yirgachefe import logger
 
 from myid.base_service import BaseService, ServiceResult
 from myid.core.api_path import APIPath
@@ -60,7 +62,12 @@ class IssuerService(BaseService):
         request_url: str = self._url + APIPath.GET_VC + request.to_query_param()
         result_response: ResultResponse = HttpUtil.get(request_url)
 
-        return CredentialInfo(**result_response.result) if result_response.status else None
+        logger.debug(f'get_vc request: {request_url}')
+        logger.debug(f'get_vc result: {result_response}')
+        if result_response.status:
+            return CredentialInfo.from_json(result_response.result)
+        else:
+            raise JSONRPCException(result_response.result)
 
     def register_vc(self, credential: Credential, issuer_key_holder: DidKeyHolder) -> ServiceResult:
         """Register a VC via myid Server.

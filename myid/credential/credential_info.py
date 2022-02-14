@@ -86,6 +86,29 @@ class CredentialInfo:
     def expiry_date(self) -> int:
         return self._expiry_date
 
+    @staticmethod
+    def from_json(data: dict) -> 'CredentialInfo':
+        parameters = {'type_': PropertyName.CREDENTIAL_INFO_TYPE_COMMON,
+                      'issuer_did': data['issuerDid'],
+                      'signature': data['sig']}
+
+        if data.get('holderDid'):
+            parameters['holder_did'] = data['holderDid']
+        if data.get('issueDate'):
+            parameters['issue_date'] = data['issueDate']
+        if data.get('isRevoke'):
+            parameters['is_revoke'] = data['isRevoke']
+        if data.get('revokeDate'):
+            parameters['revoke_date'] = data['revokeDate']
+        if data.get('expiryDate'):
+            parameters['expiry_date'] = data['expiryDate']
+        if data.get('created'):
+            parameters['creation_block'] = data['created']
+        if data.get('revoked'):
+            parameters['revocation_block'] = data['revoked']
+
+        return CredentialInfo(**parameters)
+
     def to_json(self) -> dict:
         return {
             'type': self._type,
