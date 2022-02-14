@@ -32,4 +32,4 @@ class VCRequest:
         if self.status:
             query += f'status="{self.status}&'
 
-        return f'{{{query[:-1]}}}'
+        return f'{query[:-1]}'
