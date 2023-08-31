@@ -9,7 +9,7 @@ from iconsdk.exception import JSONRPCException
 from iconsdk.icon_service import IconService
 from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet, Wallet
-from yirgachefe import logger
+from loguru import logger
 
 from myid.score.credential_info_score import CredentialInfoScore
 
@@ -44,15 +44,15 @@ class CredentialService:
             try:
                 tx_result = self._icon_service.get_transaction_result(tx_hash)
                 if not tx_result:
-                    raise JSONRPCException('transaction result is None.')
+                    raise JSONRPCException("transaction result is None.")
             except JSONRPCException as e:
-                logger.debug(f'{e}')
+                logger.debug(f"{e}")
 
                 if retry_times == 0:
                     raise TransactionException(e)
 
                 retry_times -= 1
-                logger.debug(f'Remain to retry request for getting transaction result: {retry_times}')
+                logger.debug(f"Remain to retry request for getting transaction result: {retry_times}")
 
                 await asyncio.sleep(2)
                 continue
@@ -68,11 +68,11 @@ class CredentialService:
         :return: the TransactionResult object
         """
         if not Jwt.decode(signed_jwt).signature:
-            raise Exception('JWT string must contain signature to send a transaction.')
+            raise Exception("JWT string must contain signature to send a transaction.")
 
-        transaction = self._credential_score.jwt_method(from_address=wallet.get_address(),
-                                                        jwt=signed_jwt,
-                                                        method=method)
+        transaction = self._credential_score.jwt_method(
+            from_address=wallet.get_address(), jwt=signed_jwt, method=method
+        )
         tx_hash: str = self._send_transaction(transaction, wallet)
 
         return await self._get_transaction_result(tx_hash)
@@ -87,11 +87,11 @@ class CredentialService:
         """
         for jwt in signed_jwt_list:
             if not Jwt.decode(jwt).signature:
-                raise Exception('JWT string must contain signature to send a transaction.')
+                raise Exception("JWT string must contain signature to send a transaction.")
 
-        transaction = self._credential_score.jwt_method(from_address=wallet.get_address(),
-                                                        jwt=','.join(signed_jwt_list),
-                                                        method=method)
+        transaction = self._credential_score.jwt_method(
+            from_address=wallet.get_address(), jwt=",".join(signed_jwt_list), method=method
+        )
         tx_hash: str = self._send_transaction(transaction, wallet)
 
         return await self._get_transaction_result(tx_hash)
@@ -105,11 +105,11 @@ class CredentialService:
         :return: the TransactionResult object
         """
         if not Jwt.decode(signed_jwt).signature:
-            raise Exception('JWT string must contain signature to send a transaction.')
+            raise Exception("JWT string must contain signature to send a transaction.")
 
-        transaction = self._credential_score.reject_history_jwt_method(from_address=wallet.get_address(),
-                                                                       jwt=signed_jwt,
-                                                                       method=method)
+        transaction = self._credential_score.reject_history_jwt_method(
+            from_address=wallet.get_address(), jwt=signed_jwt, method=method
+        )
         tx_hash: str = self._send_transaction(transaction, wallet)
 
         return await self._get_transaction_result(tx_hash)
@@ -131,7 +131,7 @@ class CredentialService:
         :return: the result of transaction
         """
         if not signature:
-            raise ValueError('signature cannot be None.')
+            raise ValueError("signature cannot be None.")
 
         return json.loads(self._credential_score.get(signature))
 
@@ -142,7 +142,7 @@ class CredentialService:
         :return: status json
         """
         if not signature:
-            raise ValueError('signature cannot be None.')
+            raise ValueError("signature cannot be None.")
 
         return json.loads(self._credential_score.is_valid(signature))
 
@@ -153,7 +153,7 @@ class CredentialService:
         :param signed_jwt: the string that signed the object returned by calling `CredentialInfoParam`
         :return: the result of transaction
         """
-        return await self._send_jwt(wallet, signed_jwt, 'register')
+        return await self._send_jwt(wallet, signed_jwt, "register")
 
     async def register_credential_list(self, wallet: KeyWallet, signed_jwt: List[str]) -> dict:
         """register the Credential info list.
@@ -162,7 +162,7 @@ class CredentialService:
         :param signed_jwt: the string that signed the object returned by calling `CredentialInfoParam`
         :return: the result of transaction
         """
-        return await self._send_jwt_list(wallet, signed_jwt, 'registerList')
+        return await self._send_jwt_list(wallet, signed_jwt, "registerList")
 
     async def revoke(self, wallet: KeyWallet, signed_jwt: str) -> dict:
         """revoke the Credential info.
@@ -171,7 +171,7 @@ class CredentialService:
         :param signed_jwt: the string that signed the object returned by calling `CredentialInfoParam`
         :return: the result of transaction
         """
-        return await self._send_jwt(wallet, signed_jwt, 'revoke')
+        return await self._send_jwt(wallet, signed_jwt, "revoke")
 
     async def revoke_did(self, wallet: KeyWallet, signed_jwt: str) -> dict:
         """revoke the DID by Credential info.
@@ -180,7 +180,7 @@ class CredentialService:
         :param signed_jwt: the string that signed the object returned by calling `CredentialInfoParam`
         :return: the result of transaction
         """
-        return await self._send_jwt(wallet, signed_jwt, 'revokeDid')
+        return await self._send_jwt(wallet, signed_jwt, "revokeDid")
 
     async def revoke_vc_and_did(self, wallet: KeyWallet, signed_jwt: str) -> dict:
         """revoke the VC and DID by Credential info.
@@ -189,7 +189,7 @@ class CredentialService:
         :param signed_jwt: the string that signed the object returned by calling `CredentialInfoParam`
         :return: the result of transaction
         """
-        return await self._send_jwt(wallet, signed_jwt, 'revokeVCAndDid')
+        return await self._send_jwt(wallet, signed_jwt, "revokeVCAndDid")
 
     async def register_reject_history(self, wallet: KeyWallet, signed_jwt: str) -> dict:
         """register reject by Credential info.
@@ -198,4 +198,4 @@ class CredentialService:
         :param signed_jwt: the string that signed the object returned by calling `CredentialInfoParam`
         :return: the result of transaction
         """
-        return await self._send_reject_history_jwt(wallet, signed_jwt, 'registerRejectHistory')
+        return await self._send_reject_history_jwt(wallet, signed_jwt, "registerRejectHistory")

@@ -13,7 +13,7 @@ from didsdk.protocol.protocol_message import ProtocolMessage, SignResult
 from didsdk.protocol.protocol_type import ProtocolType
 from iconsdk.exception import JSONRPCException
 from jwcrypto.jwe import JWE
-from yirgachefe import logger
+from loguru import logger
 
 from myid.base_service import BaseService, ServiceResult
 from myid.core.api_path import APIPath
@@ -35,7 +35,7 @@ class IssuerService(BaseService):
         super().__init__(url=url)
 
     @staticmethod
-    def create(url: str) -> 'IssuerService':
+    def create(url: str) -> "IssuerService":
         """Create a `IssuerService` instance that can use methods for Issuer.
 
         :param url: A Issuer WAS endpoint
@@ -49,12 +49,14 @@ class IssuerService(BaseService):
 
     def decode_request_credential(self, jwt_token: str) -> ClaimRequest:
         protocol_message: ProtocolMessage = ProtocolMessage.from_(
-            ProtocolType.REQUEST_CREDENTIAL.value, JWE().deserialize(raw_jwe=jwt_token))
+            ProtocolType.REQUEST_CREDENTIAL.value, JWE().deserialize(raw_jwe=jwt_token)
+        )
         return protocol_message.claim_request
 
     def get_request(self, credential_info: CredentialInfo, key_holder: DidKeyHolder) -> VCRequest:
-        revoke_jwt: Jwt = CredentialInfoScoreParameter.credential_info_param(did_key_holder=key_holder,
-                                                                             credential_info=credential_info)
+        revoke_jwt: Jwt = CredentialInfoScoreParameter.credential_info_param(
+            did_key_holder=key_holder, credential_info=credential_info
+        )
         return VCRequest(jwt=key_holder.sign(revoke_jwt), nid=self.get_decimal_nid_from_did(key_holder.did))
 
     def get_vc(self, issuer_did: str, signature: str) -> Optional[CredentialInfo]:
@@ -62,8 +64,8 @@ class IssuerService(BaseService):
         request_url: str = self._url + APIPath.GET_VC + request.to_query_param()
         result_response: ResultResponse = HttpUtil.get(request_url)
 
-        logger.debug(f'get_vc request: {request_url}')
-        logger.debug(f'get_vc result: {result_response}')
+        logger.debug(f"get_vc request: {request_url}")
+        logger.debug(f"get_vc result: {result_response}")
         if result_response.status:
             return CredentialInfo.from_json(result_response.result)
         else:
@@ -78,54 +80,62 @@ class IssuerService(BaseService):
         """
         request_url: str = self._url + APIPath.REG_VC
         payload: Payload = credential.jwt.payload
-        credential_info: CredentialInfo = CredentialInfo(type_=PropertyName.CREDENTIAL_INFO_TYPE_REGIST,
-                                                         issuer_did=credential.did,
-                                                         holder_did=credential.target_did,
-                                                         signature=credential.jwt.signature,
-                                                         issue_date=int(time.time()),
-                                                         expiry_date=payload.exp)
+        credential_info: CredentialInfo = CredentialInfo(
+            type_=PropertyName.CREDENTIAL_INFO_TYPE_REGIST,
+            issuer_did=credential.did,
+            holder_did=credential.target_did,
+            signature=credential.jwt.signature,
+            issue_date=int(time.time()),
+            expiry_date=payload.exp,
+        )
         vc_request: VCRequest = self.get_request(credential_info=credential_info, key_holder=issuer_key_holder)
         result_response: ResultResponse = HttpUtil.post(url=request_url, json=dataclasses.asdict(vc_request))
         if result_response.status:
             types: List[str] = credential.vc.type
             types.remove(DIDPropertyName.JL_TYPE_VERIFIABLE_CREDENTIAL)
-            issued_register_request: IssuedRegRequest = IssuedRegRequest(vcSig=credential.jwt.signature,
-                                                                         vcType=[types[0]] if len(types) > 0 else None,
-                                                                         issuerDid=payload.iss,
-                                                                         holderDid=payload.sub,
-                                                                         issueDate=payload.iat,
-                                                                         expiryDate=payload.exp)
+            issued_register_request: IssuedRegRequest = IssuedRegRequest(
+                vcSig=credential.jwt.signature,
+                vcType=[types[0]] if len(types) > 0 else None,
+                issuerDid=payload.iss,
+                holderDid=payload.sub,
+                issueDate=payload.iat,
+                expiryDate=payload.exp,
+            )
             request_url = self._url + APIPath.ISS_VC_LOG
             HttpUtil.post(url=request_url, json=dataclasses.asdict(issued_register_request))
 
         return ServiceResult.from_result(result_response)
 
     def revoke_vc(self, credential: Credential, issuer_key_holder: DidKeyHolder) -> ServiceResult:
-        return self.revoke_vc_with_signature(signature=credential.jwt.signature,
-                                             issuer_did=credential.did,
-                                             issuer_key_holder=issuer_key_holder)
+        return self.revoke_vc_with_signature(
+            signature=credential.jwt.signature, issuer_did=credential.did, issuer_key_holder=issuer_key_holder
+        )
 
-    def revoke_vc_with_signature(self, signature: str,
-                                 issuer_did: str,
-                                 issuer_key_holder: DidKeyHolder) -> ServiceResult:
+    def revoke_vc_with_signature(
+        self, signature: str, issuer_did: str, issuer_key_holder: DidKeyHolder
+    ) -> ServiceResult:
         request_url: str = self._url + APIPath.REV_VC
         revoke_credential_info: RevokeCredentialInfo = RevokeCredentialInfo(
             type_=PropertyName.CREDENTIAL_INFO_TYPE_REVOKE,
             issuer_did=issuer_did,
             signature=signature,
-            revoke_date=int(time.time()))
+            revoke_date=int(time.time()),
+        )
         jwt: Jwt = RevokeCredentialInfoScoreParameter.revoke_credential_info_param(
-            did_key_holder=issuer_key_holder, revoke_credential_info=revoke_credential_info)
-        vc_request: VCRequest = VCRequest(jwt=issuer_key_holder.sign(jwt),
-                                          nid=self.get_decimal_nid_from_did(issuer_key_holder.did))
+            did_key_holder=issuer_key_holder, revoke_credential_info=revoke_credential_info
+        )
+        vc_request: VCRequest = VCRequest(
+            jwt=issuer_key_holder.sign(jwt), nid=self.get_decimal_nid_from_did(issuer_key_holder.did)
+        )
         result_response: ResultResponse = HttpUtil.post(url=request_url, json=dataclasses.asdict(vc_request))
         return ServiceResult.from_result(result_response)
 
-    def sign_encrypt_credential(self, protocol_message: ProtocolMessage,
-                                issuer_key_holder: DidKeyHolder,
-                                kid: str) -> ServiceResult:
-        sign_result: SignResult = protocol_message.sign_encrypt(did_key_holder=issuer_key_holder,
-                                                                ecdh_key=self._ecdh_keys.get(kid))
+    def sign_encrypt_credential(
+        self, protocol_message: ProtocolMessage, issuer_key_holder: DidKeyHolder, kid: str
+    ) -> ServiceResult:
+        sign_result: SignResult = protocol_message.sign_encrypt(
+            did_key_holder=issuer_key_holder, ecdh_key=self._ecdh_keys.get(kid)
+        )
         if sign_result.success:
             credential: Credential = Credential.from_jwt(json.loads(protocol_message.message))
             self.register_vc(credential, issuer_key_holder)
