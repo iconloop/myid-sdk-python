@@ -9,8 +9,9 @@ class HttpUtil:
         try:
             with requests.Session() as session:
                 response: requests.Response = session.get(url=url)
-            return ResultResponse(status=(response.status_code == requests.codes.ok),
-                                  result=response.json().get('result'))
+            return ResultResponse(
+                status=(response.status_code == requests.codes.ok), result=response.json().get("result")
+            )
         except Exception as e:
             return ResultResponse(status=False, result=str(e))
 
@@ -19,7 +20,8 @@ class HttpUtil:
         try:
             with requests.Session() as session:
                 response: requests.Response = session.post(url=url, json=json)
-            return ResultResponse(status=(response.status_code == requests.codes.ok),
-                                  result=response.json().get('result'))
+            return ResultResponse(
+                status=(response.status_code == requests.codes.ok), result=response.json().get("result")
+            )
         except Exception as e:
             return ResultResponse(status=False, result=str(e))

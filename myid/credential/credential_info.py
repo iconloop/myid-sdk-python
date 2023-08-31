@@ -4,16 +4,19 @@ from myid.core.property_name import PropertyName
 class CredentialInfo:
     """Represents a credential info"""
 
-    def __init__(self, type_: str,
-                 issuer_did: str,
-                 signature: str,
-                 is_revoke: bool = False,
-                 holder_did: str = None,
-                 issue_date: int = None,
-                 revoke_date: int = None,
-                 expiry_date: int = None,
-                 creation_block: int = None,
-                 revocation_block: int = None):
+    def __init__(
+        self,
+        type_: str,
+        issuer_did: str,
+        signature: str,
+        is_revoke: bool = False,
+        holder_did: str = None,
+        issue_date: int = None,
+        revoke_date: int = None,
+        expiry_date: int = None,
+        creation_block: int = None,
+        revocation_block: int = None,
+    ):
         """create credential info object
         :param type_: a string CredentialInfo type
         :param issuer_did: a string issuer DID
@@ -28,12 +31,12 @@ class CredentialInfo:
         """
         if type_ == PropertyName.CREDENTIAL_INFO_TYPE_REGIST:
             if not issue_date:
-                raise ValueError('issue_date cannot be None.')
+                raise ValueError("issue_date cannot be None.")
             if not expiry_date:
-                raise ValueError('expiry_date cannot be None.')
+                raise ValueError("expiry_date cannot be None.")
 
         if type_ == PropertyName.CREDENTIAL_INFO_TYPE_REVOKE and not revoke_date:
-            raise ValueError('revoke_date cannot be None.')
+            raise ValueError("revoke_date cannot be None.")
 
         self._type: str = type_
         self._issuer_did: str = issuer_did
@@ -87,38 +90,40 @@ class CredentialInfo:
         return self._expiry_date
 
     @staticmethod
-    def from_json(data: dict) -> 'CredentialInfo':
-        parameters = {'type_': PropertyName.CREDENTIAL_INFO_TYPE_COMMON,
-                      'issuer_did': data['issuerDid'],
-                      'signature': data['sig']}
+    def from_json(data: dict) -> "CredentialInfo":
+        parameters = {
+            "type_": PropertyName.CREDENTIAL_INFO_TYPE_COMMON,
+            "issuer_did": data["issuerDid"],
+            "signature": data["sig"],
+        }
 
-        if data.get('holderDid'):
-            parameters['holder_did'] = data['holderDid']
-        if data.get('issueDate'):
-            parameters['issue_date'] = data['issueDate']
-        if data.get('isRevoke'):
-            parameters['is_revoke'] = data['isRevoke']
-        if data.get('revokeDate'):
-            parameters['revoke_date'] = data['revokeDate']
-        if data.get('expiryDate'):
-            parameters['expiry_date'] = data['expiryDate']
-        if data.get('created'):
-            parameters['creation_block'] = data['created']
-        if data.get('revoked'):
-            parameters['revocation_block'] = data['revoked']
+        if data.get("holderDid"):
+            parameters["holder_did"] = data["holderDid"]
+        if data.get("issueDate"):
+            parameters["issue_date"] = data["issueDate"]
+        if data.get("isRevoke"):
+            parameters["is_revoke"] = data["isRevoke"]
+        if data.get("revokeDate"):
+            parameters["revoke_date"] = data["revokeDate"]
+        if data.get("expiryDate"):
+            parameters["expiry_date"] = data["expiryDate"]
+        if data.get("created"):
+            parameters["creation_block"] = data["created"]
+        if data.get("revoked"):
+            parameters["revocation_block"] = data["revoked"]
 
         return CredentialInfo(**parameters)
 
     def to_json(self) -> dict:
         return {
-            'type': self._type,
-            'issuerDid': self._issuer_did,
-            'holderDid': self._holder_did,
-            'sig': self._signature,
-            'isRevoke': self._is_revoke,
-            'issueDate': self._issue_date,
-            'revokeDate': self._revoke_date,
-            'expiryDate': self._expiry_date,
-            'created': self._creation_block,
-            'revoked': self._revocation_block
+            "type": self._type,
+            "issuerDid": self._issuer_did,
+            "holderDid": self._holder_did,
+            "sig": self._signature,
+            "isRevoke": self._is_revoke,
+            "issueDate": self._issue_date,
+            "revokeDate": self._revoke_date,
+            "expiryDate": self._expiry_date,
+            "created": self._creation_block,
+            "revoked": self._revocation_block,
         }

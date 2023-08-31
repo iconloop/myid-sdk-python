@@ -14,8 +14,9 @@ class RevokeCredentialInfoScoreParameter:
         contents = {
             PropertyName.CREDENTIAL_INFO_ISSUER_DID: revoke_credential_info.issuer_did,
             PropertyName.CREDENTIAL_INFO_SIGNATURE: revoke_credential_info.signature,
-            PropertyName.CREDENTIAL_INFO_REVOKE_DATE: (revoke_credential_info.revoke_date
-                                                       if revoke_credential_info.revoke_date else 0)
+            PropertyName.CREDENTIAL_INFO_REVOKE_DATE: (
+                revoke_credential_info.revoke_date if revoke_credential_info.revoke_date else 0
+            ),
         }
         payload: Payload = Payload(contents=contents)
 

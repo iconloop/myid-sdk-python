@@ -3,10 +3,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "myid-did-sdk"
+name = "myid-sdk"
 description = ''
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.8"
 license = "MIT"
 keywords = []
 authors = [
@@ -21,7 +21,7 @@ classifiers = [
 ]
 dependencies = [
   "icon-did-sdk @ git+https://git@github.com/iconloop/did-sdk-python.git@develop",
-  "iconsdk==2.5.0",
+  "iconsdk~=2.4.5",
   "loguru==0.7.0",
   "requests==2.28.2",
   "pydantic[dotenv]==1.10.7",
@@ -40,7 +40,7 @@ doc = [
   "mkdocs-material~=9.1.18",
 ]
 all = [
-  "icon-did-sdk[doc, dev]",
+  "myid-sdk[doc, dev]",
 ]
 
 [project.urls]

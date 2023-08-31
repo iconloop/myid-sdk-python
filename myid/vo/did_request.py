@@ -8,7 +8,7 @@ class DIDRequest:
     publicKey: str
 
     def __str__(self) -> str:
-        text: str = ''
+        text: str = ""
         if self.keyId:
             text += f'"keyId":"{self.keyId}",'
         if self.nid:
@@ -16,4 +16,4 @@ class DIDRequest:
         if self.publicKey:
             text += f'"publicKey":"{self.publicKey}",'
 
-        return f'{{{text[:-1]}}}'
+        return f"{{{text[:-1]}}}"

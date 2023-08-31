@@ -1,7 +1,7 @@
 import dataclasses
 import json
 import time
-from typing import Optional, List
+from typing import List, Optional
 
 from didsdk.core.did_key_holder import DidKeyHolder
 from didsdk.core.property_name import PropertyName as DIDPropertyName

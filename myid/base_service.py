@@ -1,5 +1,5 @@
 import dataclasses
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
 
 from didsdk.document.document import Document
 from didsdk.jwe.ecdhkey import ECDHKey
