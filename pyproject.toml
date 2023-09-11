@@ -20,7 +20,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "icon-did-sdk @ git+https://git@github.com/iconloop/did-sdk-python.git@develop",
+  # FIXME: icon-did-sdk should be edited install branch to develop
+  "icon-did-sdk @ git+https://git@github.com/iconloop/did-sdk-python.git@feature/SC-773",
   "iconsdk~=2.4.5",
   "loguru==0.7.0",
   "requests==2.28.2",
