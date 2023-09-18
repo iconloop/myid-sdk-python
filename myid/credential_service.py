@@ -11,6 +11,7 @@ from iconsdk.signed_transaction import SignedTransaction
 from iconsdk.wallet.wallet import KeyWallet, Wallet
 from loguru import logger
 
+from myid import settings
 from myid.score.credential_info_score import CredentialInfoScore
 
 
@@ -39,7 +40,7 @@ class CredentialService:
         :return:
         """
         response = None
-        retry_times = 5
+        retry_times = settings.MYIDSDK_TX_RETRY_COUNT
         while response is None and retry_times > 0:
             try:
                 tx_result = self._icon_service.get_transaction_result(tx_hash)
@@ -54,7 +55,7 @@ class CredentialService:
                 retry_times -= 1
                 logger.debug(f"Remain to retry request for getting transaction result: {retry_times}")
 
-                await asyncio.sleep(2)
+                await asyncio.sleep(settings.MYIDSDK_TX_SLEEP_TIME)
                 continue
 
             return tx_result

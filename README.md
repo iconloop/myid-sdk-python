@@ -9,5 +9,5 @@
 ### Log
 Add the below configuration for loguru.
 ~~~
-LOG_ENABLE_MYID_LOGGER=[true|false]
+MYIDSDK_LOG_ENABLE_LOGGER=[true|false]
 ~~~
