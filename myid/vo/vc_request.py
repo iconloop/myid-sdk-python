@@ -9,7 +9,7 @@ class VCRequest:
     sig: str = None
 
     def __str__(self) -> str:
-        text: str = ''
+        text: str = ""
         if self.jwt:
             text += f'"jwt":"{self.jwt}",'
         if self.nid:
@@ -19,17 +19,17 @@ class VCRequest:
         if self.status:
             text += f'"status":"{self.status}",'
 
-        return f'{{{text[:-1]}}}'
+        return f"{{{text[:-1]}}}"
 
     def to_query_param(self) -> str:
-        query: str = '?'
+        query: str = "?"
         if self.jwt:
-            query += f'jwt={self.jwt}&'
+            query += f"jwt={self.jwt}&"
         if self.nid:
-            query += f'nid={self.nid}&'
+            query += f"nid={self.nid}&"
         if self.sig:
-            query += f'sig={self.sig}&'
+            query += f"sig={self.sig}&"
         if self.status:
             query += f'status="{self.status}&'
 
-        return f'{query[:-1]}'
+        return f"{query[:-1]}"

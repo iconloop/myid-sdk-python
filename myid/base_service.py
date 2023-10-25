@@ -1,11 +1,11 @@
 import dataclasses
-from typing import Dict, Optional, Any
+from typing import Any, Dict, Optional
 
 from didsdk.document.document import Document
 from didsdk.jwe.ecdhkey import ECDHKey
 from didsdk.jwt.jwt import Jwt, VerifyResult
 from didsdk.protocol.protocol_message import SignResult
-from yirgachefe import logger
+from loguru import logger
 
 from myid.core.api_path import APIPath
 from myid.utils import HttpUtil
@@ -44,14 +44,14 @@ class BaseService:
         del self._ecdh_keys[kid]
 
     def get_decimal_nid_from_did(self, did: str) -> str:
-        hex_nid: str = did.split(':')[2]
+        hex_nid: str = did.split(":")[2]
         return str(int(hex_nid, 10))
 
     def get_did(self, did: str) -> Optional[Document]:
         request_url: str = self._url + APIPath.R_DID + did
-        logger.debug(f'get_did: {request_url}')
+        logger.debug(f"get_did: {request_url}")
         result_response: ResultResponse = HttpUtil.get(request_url)
-        logger.debug(f'response: {result_response}')
+        logger.debug(f"response: {result_response}")
 
         return Document.deserialize(result_response.result) if result_response.status else None
 
@@ -91,20 +91,21 @@ class ServiceResult:
         return self._fail_message
 
     @staticmethod
-    def from_fail_message(message: str) -> 'ServiceResult':
+    def from_fail_message(message: str) -> "ServiceResult":
         return ServiceResult(success=False, result=message)
 
     @staticmethod
-    def from_result(result: ResultResponse) -> 'ServiceResult':
+    def from_result(result: ResultResponse) -> "ServiceResult":
         return ServiceResult(success=result.status, result=result.result)
 
     @staticmethod
-    def from_signed_object(signed_object: SignResult) -> 'ServiceResult':
-        return ServiceResult(success=signed_object.success,
-                             signed_object=signed_object.result,
-                             result=signed_object.fail_message)
+    def from_signed_object(signed_object: SignResult) -> "ServiceResult":
+        return ServiceResult(
+            success=signed_object.success, signed_object=signed_object.result, result=signed_object.fail_message
+        )
 
     @staticmethod
-    def from_verify_result(verify_result: VerifyResult) -> 'ServiceResult':
-        return ServiceResult(success=verify_result.success,
-                             result=None if verify_result.success else verify_result.fail_message)
+    def from_verify_result(verify_result: VerifyResult) -> "ServiceResult":
+        return ServiceResult(
+            success=verify_result.success, result=None if verify_result.success else verify_result.fail_message
+        )

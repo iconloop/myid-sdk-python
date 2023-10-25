@@ -21,13 +21,15 @@ class CredentialInfoScore:
 
     def _build_transaction(self, from_address: str, method: str, params: dict) -> CallTransaction:
         timestamp = int(time.time() * 1_000_000)
-        builder = CallTransactionBuilder(nid=self._network_id,
-                                         from_=from_address,
-                                         to=self._score_address,
-                                         step_limit=5_000_000,
-                                         timestamp=timestamp,
-                                         method=method,
-                                         params=params)
+        builder = CallTransactionBuilder(
+            nid=self._network_id,
+            from_=from_address,
+            to=self._score_address,
+            step_limit=5_000_000,
+            timestamp=timestamp,
+            method=method,
+            params=params,
+        )
         return builder.build()
 
     def _build_call(self, method: str, params: dict = None) -> Call:
@@ -35,22 +37,22 @@ class CredentialInfoScore:
         return builder.build()
 
     def get(self, signature: str) -> str:
-        params = {'sig': signature}
-        call: Call = self._build_call(method='get', params=params)
+        params = {"sig": signature}
+        call: Call = self._build_call(method="get", params=params)
         return self._icon_service.call(call)
 
     def get_reject_history(self, vc_id: str):
-        params = {'vcId': vc_id}
-        call: Call = self._build_call(method='getRejectHistory', params=params)
+        params = {"vcId": vc_id}
+        call: Call = self._build_call(method="getRejectHistory", params=params)
         return self._icon_service.call(call)
 
     def get_under_taker_list(self):
-        call: Call = self._build_call(method='getUndertakerList')
+        call: Call = self._build_call(method="getUndertakerList")
         return self._icon_service.call(call)
 
     def is_valid(self, signature: str) -> str:
-        params = {'sig': signature}
-        call: Call = self._build_call(method='isValid', params=params)
+        params = {"sig": signature}
+        call: Call = self._build_call(method="isValid", params=params)
         return self._icon_service.call(call)
 
     def jwt_method(self, from_address: str, jwt: str, method: str) -> CallTransaction:
@@ -61,7 +63,7 @@ class CredentialInfoScore:
         :param method: score method (add, revoke, revokeDid, revokeVCAndDid)
         :return: Transaction object
         """
-        params = {'credentialJwt': jwt}
+        params = {"credentialJwt": jwt}
         return self._build_transaction(from_address, method=method, params=params)
 
     def jwt_list_method(self, from_address: str, jwt_list: str, method: str) -> CallTransaction:
@@ -72,7 +74,7 @@ class CredentialInfoScore:
         :param method: score method (add, revoke, revokeDid, revokeVCAndDid)
         :return: Transaction object
         """
-        params = {'credentialJwtList': jwt_list}
+        params = {"credentialJwtList": jwt_list}
         return self._build_transaction(from_address, method=method, params=params)
 
     def reject_history_jwt_method(self, from_address: str, jwt: str, method: str) -> CallTransaction:
@@ -83,5 +85,5 @@ class CredentialInfoScore:
         :param method: score method (add, revoke, revokeDid, revokeVCAndDid)
         :return: Transaction object
         """
-        params = {'rejectJwt': jwt}
+        params = {"rejectJwt": jwt}
         return self._build_transaction(from_address, method=method, params=params)

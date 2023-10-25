@@ -26,7 +26,7 @@ class VerifierService(BaseService):
         kid: str = protocol_message.jwe_kid
         ecdh_key: ECDHKey = self._ecdh_keys.get(kid)
         if not ecdh_key:
-            raise JweException(f'Not exist ECDHKey kid({kid})')
+            raise JweException(f"Not exist ECDHKey kid({kid})")
 
         protocol_message.decrypt_jwe(ecdh_key)
 
@@ -51,7 +51,7 @@ class VerifierService(BaseService):
         return ServiceResult.from_result(result_response)
 
     @staticmethod
-    def create(url: str) -> 'VerifierService':
+    def create(url: str) -> "VerifierService":
         """Create a `VerifierService` instance that can use methods for Verifier.
 
         :param url: A Verifier WAS endpoint
@@ -63,12 +63,14 @@ class VerifierService(BaseService):
         protocol_message: ProtocolMessage = ProtocolMessage.from_(
             type_=ProtocolType.RESPONSE_PROTECTED_PRESENTATION.value,
             message=JWE().deserialize(jwe_token),
-            is_protected=True)
+            is_protected=True,
+        )
         self._decrypt(protocol_message)
 
         return protocol_message.presentation
 
-    def sign_encrypt_request_presentation(self, protocol_message: ProtocolMessage,
-                                          verifier_key_holder: DidKeyHolder) -> ServiceResult:
+    def sign_encrypt_request_presentation(
+        self, protocol_message: ProtocolMessage, verifier_key_holder: DidKeyHolder
+    ) -> ServiceResult:
         result: SignResult = protocol_message.sign_encrypt(verifier_key_holder)
         return ServiceResult.from_signed_object(result)
